@@ -1,4 +1,4 @@
-# Tollculator
+# Grand Total
 
 A scientific calculator that charges you for the answer.
 
