@@ -126,6 +126,7 @@ async function equals() {
     if (!res.ok || !data.url) {
       throw new Error(data.error || "Cashier unreachable. Answer withheld.");
     }
+    if (Number.isInteger(data.count)) renderCount(data.count);
     window.location.href = data.url;
   } catch (err) {
     setBusy(false);
@@ -228,3 +229,110 @@ document.addEventListener("keydown", (e) => {
 displayEl.focus();
 handleReturn();
 fitDisplay();
+
+// Split-flap tally of every equation the cashier has billed
+const flapsEl = document.getElementById("flaps");
+const FLAP_DIGITS = 6;
+const FLAP_MS = 150; // one half-turn; matches --flap-ms in the stylesheet
+const COUNT_POLL_MS = 15000;
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+let flipGen = 0;
+
+function makeFlap() {
+  const flap = document.createElement("span");
+  flap.className = "flap";
+  for (const part of ["flap-top", "flap-bottom", "flap-leaf-front", "flap-leaf-back"]) {
+    const half = document.createElement("span");
+    half.className = "flap-half " + part;
+    half.appendChild(document.createElement("span"));
+    flap.appendChild(half);
+  }
+  flap.dataset.digit = "0";
+  flap.children[0].firstChild.textContent = "0";
+  flap.children[1].firstChild.textContent = "0";
+  return flap;
+}
+
+function flapParts(flap) {
+  return {
+    top: flap.children[0].firstChild,
+    bottom: flap.children[1].firstChild,
+    front: flap.children[2].firstChild,
+    back: flap.children[3].firstChild,
+  };
+}
+
+// Snap an in-flight flip straight to its final face
+function settleFlap(flap) {
+  clearTimeout(flap._flapTimer);
+  flap.classList.remove("flipping");
+  const parts = flapParts(flap);
+  parts.top.textContent = flap.dataset.digit;
+  parts.bottom.textContent = flap.dataset.digit;
+}
+
+function flipFlap(flap, digit) {
+  if (flap.dataset.digit === digit) return;
+  settleFlap(flap);
+  const old = flap.dataset.digit;
+  flap.dataset.digit = digit;
+  const parts = flapParts(flap);
+  if (reducedMotion.matches) {
+    parts.top.textContent = digit;
+    parts.bottom.textContent = digit;
+    return;
+  }
+  parts.top.textContent = digit; // revealed as the front leaf falls
+  parts.bottom.textContent = old; // covered when the back leaf lands
+  parts.front.textContent = old;
+  parts.back.textContent = digit;
+  void flap.offsetWidth; // restart the animation cleanly
+  flap.classList.add("flipping");
+  flap._flapTimer = setTimeout(() => settleFlap(flap), FLAP_MS * 2 + 40);
+}
+
+function renderCount(n) {
+  if (!flapsEl || !Number.isInteger(n) || n < 0) return;
+  const width = Math.max(FLAP_DIGITS, flapsEl.children.length, String(n).length);
+  while (flapsEl.children.length < width) {
+    flapsEl.insertBefore(makeFlap(), flapsEl.firstChild);
+  }
+  const digits = String(n).padStart(width, "0").split("");
+  const gen = ++flipGen;
+  let delay = 0;
+  for (let i = digits.length - 1; i >= 0; i--) {
+    const flap = flapsEl.children[i];
+    const digit = digits[i];
+    if (flap.dataset.digit === digit) continue;
+    if (delay === 0 || reducedMotion.matches) {
+      flipFlap(flap, digit);
+    } else {
+      setTimeout(() => {
+        if (gen === flipGen) flipFlap(flap, digit);
+      }, delay);
+    }
+    delay += 60; // cascade right to left like a departures board
+  }
+}
+
+async function refreshCount() {
+  try {
+    const res = await fetch("/api/count");
+    const data = await res.json();
+    if (res.ok) renderCount(data.count);
+  } catch {
+    // The board keeps its last reading until the next poll
+  }
+}
+
+if (flapsEl) {
+  for (let i = 0; i < FLAP_DIGITS; i++) flapsEl.appendChild(makeFlap());
+  refreshCount();
+  setInterval(() => {
+    if (!document.hidden) refreshCount();
+  }, COUNT_POLL_MS);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) refreshCount();
+  });
+}
