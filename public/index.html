@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Grand Total</title>
+  <meta name="description" content="A scientific calculator that charges you for the answer.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="calc">
+    <header class="brand">Grand Total</header>
+    <section class="screen">
+      <div class="tape" id="tape"></div>
+      <input class="display" id="display" inputmode="none" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="120" aria-label="Expression" placeholder="0">
+    </section>
+    <div class="status" id="status" role="status"></div>
+    <div class="keys" id="keys">
+      <div class="sci">
+        <button class="key sci-key" data-insert="sin(">sin</button>
+        <button class="key sci-key" data-insert="cos(">cos</button>
+        <button class="key sci-key" data-insert="tan(">tan</button>
+        <button class="key sci-key" data-insert="ln(">ln</button>
+        <button class="key sci-key" data-insert="log(">log</button>
+        <button class="key sci-key" data-insert="!">x!</button>
+        <button class="key sci-key" data-insert="√(">√</button>
+        <button class="key sci-key" data-insert="^">x^y</button>
+        <button class="key sci-key" data-insert="(">(</button>
+        <button class="key sci-key" data-insert=")">)</button>
+        <button class="key sci-key" data-insert="π">π</button>
+        <button class="key sci-key" data-insert="e">e</button>
+      </div>
+      <div class="main">
+        <button class="key fn" data-action="clear" aria-label="Clear">C</button>
+        <button class="key fn" data-action="backspace" aria-label="Backspace">⌫</button>
+        <button class="key fn" data-action="ans" aria-label="Last purchased answer">ANS</button>
+        <button class="key op" data-insert="÷" aria-label="Divide">÷</button>
+        <button class="key" data-insert="7">7</button>
+        <button class="key" data-insert="8">8</button>
+        <button class="key" data-insert="9">9</button>
+        <button class="key op" data-insert="×" aria-label="Multiply">×</button>
+        <button class="key" data-insert="4">4</button>
+        <button class="key" data-insert="5">5</button>
+        <button class="key" data-insert="6">6</button>
+        <button class="key op" data-insert="−" aria-label="Subtract">−</button>
+        <button class="key" data-insert="1">1</button>
+        <button class="key" data-insert="2">2</button>
+        <button class="key" data-insert="3">3</button>
+        <button class="key op" data-insert="+" aria-label="Add">+</button>
+        <button class="key eq" data-action="equals" aria-label="Equals">=</button>
+        <button class="key zero" data-insert="0">0</button>
+        <button class="key" data-insert=".">.</button>
+      </div>
+    </div>
+    <footer class="fine-print">All answers billed at face value. Payments by Stripe.</footer>
+  </main>
+  <script src="vendor/math.min.js"></script>
+  <script src="calc.js"></script>
+</body>
+</html>
