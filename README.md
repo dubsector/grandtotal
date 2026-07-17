@@ -27,6 +27,15 @@ No frameworks, no build step, no Stripe SDK. The Worker talks to the Stripe REST
 
 After a mathjs version bump, run `npm run vendor` to refresh the copy in `public/vendor/`.
 
+## Brand palette
+
+Stripe Checkout branding (Settings > Business > Branding, per environment) uses the app colors:
+
+* Background: `#101014` (page), `#1a1a20` (calculator card)
+* Accent / Pay button: `#0f9d58` (the equals key)
+* Operator amber: `#e8930c`, paid green: `#35d07f`
+* Icon: `stripe-icon.png` at the repo root (512x512, made for the circular crop)
+
 ## Run locally
 
 1. `npm install`
