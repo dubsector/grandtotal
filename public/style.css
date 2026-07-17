@@ -34,6 +34,7 @@ body {
   color: var(--text);
   font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100dvh;
@@ -229,6 +230,169 @@ body {
 body.busy .keys {
   pointer-events: none;
   opacity: 0.55;
+}
+
+.footer {
+  margin-top: 22px;
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+}
+
+.counter {
+  display: grid;
+  gap: 7px;
+  justify-items: center;
+}
+
+.counter-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Split-flap board: each digit is a card cut through the middle,
+   flipping like an old airport departures display */
+.flaps {
+  --flap-w: 19px;
+  --flap-h: 28px;
+  --flap-ms: 150ms;
+  display: inline-flex;
+  gap: 3px;
+  perspective: 420px;
+}
+
+.flap {
+  position: relative;
+  width: var(--flap-w);
+  height: var(--flap-h);
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.flap::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  margin-top: -0.5px;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 4;
+}
+
+.flap-half {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  overflow: hidden;
+  background: linear-gradient(#15151b, var(--screen));
+  border: 1px solid #2c2c36;
+  backface-visibility: hidden;
+}
+
+.flap-half span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: var(--flap-h);
+  line-height: var(--flap-h);
+}
+
+.flap-top,
+.flap-leaf-front {
+  top: 0;
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+}
+
+.flap-bottom,
+.flap-leaf-back {
+  bottom: 0;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  background: linear-gradient(var(--screen), #101016);
+}
+
+.flap-top span,
+.flap-leaf-front span {
+  top: 0;
+}
+
+.flap-bottom span,
+.flap-leaf-back span {
+  bottom: 0;
+}
+
+.flap-leaf-front,
+.flap-leaf-back {
+  display: none;
+  z-index: 3;
+}
+
+.flap-leaf-front {
+  transform-origin: bottom;
+}
+
+.flap-leaf-back {
+  transform-origin: top;
+  transform: rotateX(90deg);
+}
+
+.flap.flipping .flap-leaf-front,
+.flap.flipping .flap-leaf-back {
+  display: block;
+}
+
+.flap.flipping .flap-leaf-front {
+  animation: flap-front var(--flap-ms) ease-in forwards;
+}
+
+.flap.flipping .flap-leaf-back {
+  animation: flap-back var(--flap-ms) ease-out var(--flap-ms) forwards;
+}
+
+@keyframes flap-front {
+  from { transform: rotateX(0); }
+  to { transform: rotateX(-90deg); }
+}
+
+@keyframes flap-back {
+  from { transform: rotateX(90deg); }
+  to { transform: rotateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flap.flipping .flap-leaf-front,
+  .flap.flipping .flap-leaf-back {
+    animation: none;
+    display: none;
+  }
+}
+
+.footer-links {
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.footer-links a {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.12s;
+}
+
+.footer-links a:hover {
+  color: var(--op-hover);
 }
 
 .fine-print {

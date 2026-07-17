@@ -1,7 +1,26 @@
+import { DurableObject } from "cloudflare:workers";
+
 const MIN_CENTS = 50; // Stripe's minimum charge in USD
 const MAX_CENTS = 99999999; // Stripe caps amounts at 8 digits
 // Digits, function names, and the operator glyphs the keypad emits
 const EXPRESSION_RE = /^[0-9a-zA-Z+\-−×÷*\/^!(),.\s√π%]{1,120}$/;
+
+// Single global tally of calculations sold, kept in one Durable Object
+export class Counter extends DurableObject {
+  async increment() {
+    const n = ((await this.ctx.storage.get("count")) || 0) + 1;
+    await this.ctx.storage.put("count", n);
+    return n;
+  }
+
+  async value() {
+    return (await this.ctx.storage.get("count")) || 0;
+  }
+}
+
+function counter(env) {
+  return env.COUNTER.get(env.COUNTER.idFromName("global"));
+}
 
 export default {
   async fetch(request, env) {
@@ -13,6 +32,15 @@ export default {
     if (url.pathname === "/api/session") {
       if (request.method !== "GET") return json({ error: "Method not allowed" }, 405);
       return getSession(url, env);
+    }
+    if (url.pathname === "/api/count") {
+      if (request.method !== "GET") return json({ error: "Method not allowed" }, 405);
+      return new Response(JSON.stringify({ count: await counter(env).value() }), {
+        headers: {
+          "content-type": "application/json",
+          "cache-control": "no-store",
+        },
+      });
     }
     return env.ASSETS.fetch(request);
   },
@@ -69,7 +97,15 @@ async function createCheckout(request, env, url) {
   if (!res.ok || !session.url) {
     return json({ error: "The cashier rejected this equation." }, 502);
   }
-  return json({ url: session.url });
+
+  // The tally only moves when the cashier actually prices an equation
+  let count = null;
+  try {
+    count = await counter(env).increment();
+  } catch {
+    // A stuck tally should never block a sale
+  }
+  return json({ url: session.url, count });
 }
 
 async function getSession(url, env) {

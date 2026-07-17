@@ -18,12 +18,15 @@ Runs in Stripe test mode, so no real money moves. Use test card 4242 4242 4242 4
 
 ## Stack
 
-Cloudflare Worker with static assets. Plain HTML/CSS/JS frontend with math.js vendored in `public/vendor/`, one Worker (`src/worker.js`) with two routes:
+Cloudflare Worker with static assets. Plain HTML/CSS/JS frontend with math.js vendored in `public/vendor/`, one Worker (`src/worker.js`) with three routes:
 
 * `POST /api/checkout` creates a Stripe Checkout Session for the computed total
 * `GET /api/session` verifies payment status when you land back on the calculator
+* `GET /api/count` reports how many equations the cashier has billed so far
 
 No frameworks, no build step, no Stripe SDK. The Worker talks to the Stripe REST API with plain fetch.
+
+The running tally lives in a single SQLite-backed Durable Object (`Counter` in `src/worker.js`). It increments once per checkout session created, and the footer shows it on a split-flap board that polls every 15 seconds.
 
 After a mathjs version bump, run `npm run vendor` to refresh the copy in `public/vendor/`.
 
