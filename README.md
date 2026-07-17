@@ -25,6 +25,8 @@ Cloudflare Worker with static assets. Plain HTML/CSS/JS frontend with math.js ve
 
 No frameworks, no build step, no Stripe SDK. The Worker talks to the Stripe REST API with plain fetch.
 
+After a mathjs version bump, run `npm run vendor` to refresh the copy in `public/vendor/`.
+
 ## Run locally
 
 1. `npm install`
