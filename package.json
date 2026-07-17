@@ -1,0 +1,17 @@
+{
+  "name": "grandtotal",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A calculator that charges you for the answer",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "check": "wrangler deploy --dry-run"
+  },
+  "devDependencies": {
+    "wrangler": "^4"
+  },
+  "dependencies": {
+    "mathjs": "^15.2.0"
+  }
+}
