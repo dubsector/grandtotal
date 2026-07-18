@@ -36,12 +36,13 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   min-height: 100dvh;
   padding: 16px;
 }
 
 .calc {
+  margin-top: auto;
+  margin-bottom: auto;
   width: min(400px, 100%);
   background: var(--card);
   border: 1px solid #2c2c36;
