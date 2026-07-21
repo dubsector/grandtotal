@@ -52,13 +52,16 @@ body {
 }
 
 .brand {
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--muted);
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--text);
   text-align: center;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
+}
+
+.brand .tld {
+  color: var(--eq);
 }
 
 .screen {

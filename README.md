@@ -1,6 +1,6 @@
-# Grand Total
+# grandtot.al
 
-A scientific calculator that charges you for the answer.
+A scientific calculator that charges you for the answer. All answers billed at face value.
 
 Type `1.25 + 1.25` and press `=`. Instead of showing the result, it opens a Stripe Checkout for exactly $2.50. The line item is your equation and the price is the answer. Pay up and you get sent back to the calculator with the result on the display, marked as paid in full.
 
