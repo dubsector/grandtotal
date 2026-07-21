@@ -20,6 +20,8 @@
   --eq-hover: #16b366;
   --text: #f2f2f5;
   --muted: #8a8a96;
+  --brand: #6e6e7c;
+  --brand-tld: #aeaeb4;
   --error: #ff5c5c;
   --paid: #35d07f;
 }
@@ -51,19 +53,6 @@ body {
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
 }
 
-.brand {
-  font-size: 19px;
-  font-weight: 700;
-  letter-spacing: -0.3px;
-  color: var(--text);
-  text-align: center;
-  margin-bottom: 16px;
-}
-
-.brand .tld {
-  color: var(--eq);
-}
-
 .screen {
   background: var(--screen);
   border: 1px solid #23232b;
@@ -81,6 +70,31 @@ body {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-5px); }
   75% { transform: translateX(5px); }
+}
+
+/* Brand sits on the bezel beside the tape, screen-printed onto the
+   glass the way a calculator prints its model name */
+.bezel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--brand);
+  white-space: nowrap;
+}
+
+.brand .tld {
+  color: var(--brand-tld);
+}
+
+.bezel .tape {
+  flex: 1;
 }
 
 .tape {
