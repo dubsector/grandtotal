@@ -24,6 +24,17 @@
   --brand-tld: #aeaeb4;
   --error: #ff5c5c;
   --paid: #35d07f;
+
+  /* Height the page occupies at full size: 16px body padding, the card,
+     the 22px footer gap, the footer, 16px body padding. Measure and update
+     this if the card or footer gains a row, or short viewports will scroll. */
+  --page-height: 800px;
+
+  /* Short viewports render the whole page smaller rather than pushing the
+     footer below the fold. A 1080p laptop at 150% Windows scaling leaves
+     ~668px, so it lands near 0.84. Floors at 0.7 — below that the page
+     scrolls instead of shrinking past legibility. */
+  --fit: clamp(0.7, calc(100dvh / var(--page-height)), 1);
 }
 
 html,
@@ -38,7 +49,12 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100dvh;
+  /* zoom relays out at the smaller size, so text stays sharp and the page
+     genuinely gets shorter — a transform would blur it and reserve the
+     original height anyway. Dividing back out keeps body filling the
+     viewport, since 100dvh is scaled by the zoom like any other length. */
+  zoom: var(--fit);
+  min-height: calc(100dvh / var(--fit));
   padding: 16px;
 }
 
