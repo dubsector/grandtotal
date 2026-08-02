@@ -14,6 +14,11 @@ const keysEl = document.getElementById("keys");
 
 let busy = false;
 
+// Defined by analytics.js, which may be blocked or turned off entirely
+function track(action, name, value) {
+  if (typeof window.gtTrack === "function") window.gtTrack(action, name, value);
+}
+
 function setStatus(msg, kind) {
   statusEl.textContent = msg || "";
   statusEl.className = "status" + (kind ? " " + kind : "");
@@ -32,6 +37,9 @@ function fitDisplay() {
 }
 
 function flashError(msg) {
+  // Every refusal lands here, so the reasons people get turned away (unpayable
+  // answers, sub-minimum totals, syntax errors) all get counted in one place
+  track("refused", msg);
   setStatus(msg, "error");
   const screen = displayEl.closest(".screen");
   screen.classList.remove("shake");
@@ -127,6 +135,7 @@ async function equals() {
       throw new Error(data.error || "Cashier unreachable. Answer withheld.");
     }
     if (Number.isInteger(data.count)) renderCount(data.count);
+    track("billed", raw, cents / 100);
     window.location.href = data.url;
   } catch (err) {
     setBusy(false);
@@ -168,9 +177,11 @@ async function handleReturn() {
         sessionStorage.removeItem(STORE_KEY);
         tapeEl.textContent = (stored ? stored.expression + " = " + amount : "= " + amount) + " · PAID";
         setStatus("Payment received. You own this answer now.", "paid");
+        track("paid", stored ? stored.expression : amount, data.amount_total / 100);
       } else {
         if (stored) displayEl.value = stored.expression;
         setStatus("Payment incomplete. Answer withheld.", "error");
+        track("unpaid", stored ? stored.expression : "");
       }
     } catch (err) {
       if (stored) displayEl.value = stored.expression;
@@ -182,6 +193,7 @@ async function handleReturn() {
     const stored = readStore();
     if (stored) displayEl.value = stored.expression;
     setStatus("Payment canceled. Answer withheld.", "error");
+    track("canceled", stored ? stored.expression : "");
     fitDisplay();
   }
 }
