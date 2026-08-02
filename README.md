@@ -18,11 +18,12 @@ Runs in Stripe test mode, so no real money moves. Use test card 4242 4242 4242 4
 
 ## Stack
 
-Cloudflare Worker with static assets. Plain HTML/CSS/JS frontend with math.js vendored in `public/vendor/`, one Worker (`src/worker.js`) with three routes:
+Cloudflare Worker with static assets. Plain HTML/CSS/JS frontend with math.js vendored in `public/vendor/`, one Worker (`src/worker.js`) with four routes:
 
 * `POST /api/checkout` creates a Stripe Checkout Session for the computed total
 * `GET /api/session` verifies payment status when you land back on the calculator
 * `GET /api/count` reports how many equations the cashier has billed so far
+* `GET /api/analytics` tells the page whether tracking is configured
 
 No frameworks, no build step, no Stripe SDK. The Worker talks to the Stripe REST API with plain fetch.
 
@@ -38,6 +39,19 @@ Stripe Checkout branding (Settings > Business > Branding, per environment) uses 
 * Accent / Pay button: `#0f9d58` (the equals key)
 * Operator amber: `#e8930c`, paid green: `#35d07f`
 * Icon: `stripe-icon.png` at the repo root (512x512, made for the circular crop)
+
+## Analytics
+
+Cookieless [Matomo](https://matomo.org/), self-hosted and proxied through the Worker
+(`/mtm/mtm.js`, `/mtm/mtm.php`). Pageviews plus `calculator` events: `billed`, `paid`,
+`canceled`, and `refused` with the reason. Only runs on `grandtot.al`.
+
+```
+npx wrangler secret put MATOMO_ORIGIN   # https://analytics.example.com
+npx wrangler secret put MATOMO_SITE_ID  # site id for grandtot.al
+```
+
+With either unset, `/api/analytics` returns 204 and the tracker never loads.
 
 ## Run locally
 
